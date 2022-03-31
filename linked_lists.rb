@@ -16,70 +16,72 @@ class LinkedLists
     if @head.nil?
       @head = Node.new(value)
     else
-      current = @head
-      while current.next_node != nil
-        current = current.next_node
-      end
-      current.next_node = Node.new(value)
+      append_node = @head
+      append_node = append_node.next_node until append_node.next_node.nil?
+      append_node.next_node = Node.new(value)
     end
   end
 
   def prepend(value)
-    if @head.nil?
-      @head = Node.new(value)
-    else
-      @head = Node.new(value, @head)
-    end
+    @head = if @head.nil?
+        Node.new(value)
+      else
+        Node.new(value, @head)
+      end
   end
 
-  def size(node = @head)
-    return 0 if node.nil?
-    1 + size(node.next_node)
+  def size(node = @head, count = 1)
+    return count if node.next_node.nil?
+
+    size(node.next_node, count + 1)
   end
 
-  def head
-    @head
+  def head(_node = @head)
+    @head.value
   end
 
   def tail(node = @head)
-    return node if node.next_node.nil?
+    return node.value if node.next_node.nil?
+
     tail(node.next_node)
   end
 
   def at(index, node = @head)
-    return node if index == 0
+    return node.value if index == 0
+
     at(index - 1, node.next_node)
   end
 
   def pop
     return nil if @head.nil?
     return @head if @head.next_node.nil?
-    current = @head
-    while current.next_node.next_node != nil
-      current = current.next_node
-    end
-    current.next_node = nil
+
+    actual_node = @head
+    actual_node = actual_node.next_node until actual_node.next_node.next_node.nil?
+    actual_node.next_node = nil
   end
 
   def contains?(value, node = @head)
     return true if node.value == value
     return false if node.next_node.nil?
+
     contains?(value, node.next_node)
   end
 
-  def find(value, node = @head, index = 0)
+  def find(value, index = 0, node = @head)
     return index if node.value == value
     return nil if node.next_node.nil?
-    find(value, node.next_node, index + 1)
+
+    find(value, index + 1, node.next_node)
   end
 
-  def to_s
-    return nil if @head.nil?
-    current = @head
+  def to_s(node = @head)
+    node_string = String.new
     loop do
-      print "#{current.value} -> "
-      current = current.next_node
-      break print "nil" if current.nil?
+      node_string += "#{node.value} -> "
+      node = node.next_node
+      break node_string += 'nil' if node.nil?
     end
+    print node_string
   end
 end
